@@ -223,7 +223,7 @@ diff -rupN libmusicxml-3.22.old/src/elements/factory.cpp libmusicxml-3.22/src/el
 +	fMap["numeral"] 	= new newElementFunctor<k_numeral>;
 +	fMap["numeral-alter"] 	= new newElementFunctor<k_numeral_alter>;
 +	fMap["numeral-fifths"] 	= new newElementFunctor<k_numeral_fifths>;
-+	fMap["numeral-key"] 	= new newElementFunctor<k_numeral_key>;Add commentMore actions
++	fMap["numeral-key"] 	= new newElementFunctor<k_numeral_key>;
 +	fMap["numeral-mode"] 	= new newElementFunctor<k_numeral_mode>;
 +	fMap["numeral-root"] 	= new newElementFunctor<k_numeral_root>;
  	fMap["octave"] 	= new newElementFunctor<k_octave>;
