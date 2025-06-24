@@ -1,0 +1,597 @@
+diff -rupN libmusicxml-3.22.old/src/elements/elements.h libmusicxml-3.22/src/elements/elements.h
+--- libmusicxml-3.22.old/src/elements/elements.h	2022-06-20 08:33:21.000000000 +0200
++++ libmusicxml-3.22/src/elements/elements.h	2025-06-02 16:24:54.868211060 +0200
+@@ -45,6 +45,7 @@ enum {
+ 	k_arrowhead,
+ 	k_articulations,
+ 	k_artificial,
++	k_assess,
+ 	k_attributes,
+ 	k_backup,
+ 	k_bar_style,
+@@ -53,6 +54,7 @@ enum {
+ 	k_base_pitch,
+ 	k_bass,
+ 	k_bass_alter,
++	k_bass_separator,
+ 	k_bass_step,
+ 	k_beam,
+ 	k_beat_repeat,
+@@ -78,6 +80,7 @@ enum {
+ 	k_clef,
+ 	k_clef_octave_change,
+ 	k_coda,
++	k_concert_score,
+ 	k_creator,
+ 	k_credit,
+ 	k_credit_image,
+@@ -141,9 +144,11 @@ enum {
+ 	k_figured_bass,
+ 	k_fingering,
+ 	k_fingernails,
++	k_first,
+ 	k_first_fret,
+ 	k_flip,
+ 	k_footnote,
++	k_for_part,
+ 	k_forward,
+ 	k_fp,
+ 	k_frame,
+@@ -162,6 +167,7 @@ enum {
+ 	k_group_abbreviation,
+ 	k_group_abbreviation_display,
+ 	k_group_barline,
++	k_group_link,
+ 	k_group_name,
+ 	k_group_name_display,
+ 	k_group_symbol,
+@@ -186,6 +192,8 @@ enum {
+ 	k_image,
+ 	k_instrument,
+ 	k_instrument_abbreviation,
++	k_instrument_change,
++	k_instrument_link,
+ 	k_instrument_name,
+ 	k_instrument_sound,
+ 	k_instruments,
+@@ -206,8 +214,11 @@ enum {
+ 	k_left_margin,
+ 	k_level,
+ 	k_line,
++	k_line_detail,
+ 	k_line_width,
+ 	k_link,
++	k_listen,
++	k_listening
+ 	k_lyric,
+ 	k_lyric_font,
+ 	k_lyric_language,
+@@ -258,6 +269,12 @@ enum {
+ 	k_note_size,
+ 	k_notehead,
+ 	k_notehead_text,
++	k_numeral,
++	k_numeral_alter,
++	k_numeral_fifths,
++	k_numeral_key,
++	k_numeral_mode,
++	k_numeral_root,
+ 	k_octave,
+ 	k_octave_change,
+ 	k_octave_shift,
+@@ -270,6 +287,8 @@ enum {
+ 	k_other_articulation,
+ 	k_other_direction,
+ 	k_other_dynamics,
++	k_other_listen,
++	k_other_listening,
+ 	k_other_notation,
+ 	k_other_ornament,
+ 	k_other_percussion,
+@@ -284,11 +303,14 @@ enum {
+ 	k_part,
+ 	k_part_abbreviation,
+ 	k_part_abbreviation_display,
++	k_part_clef,
+ 	k_part_group,
++	k_part_link,
+ 	k_part_list,
+ 	k_part_name,
+ 	k_part_name_display,
+ 	k_part_symbol,
++	k_part_transpose,
+ 	k_pedal,
+ 	k_pedal_alter,
+ 	k_pedal_step,
+@@ -299,6 +321,8 @@ enum {
+ 	k_pitch,
+ 	k_pitched,
+ 	k_play,
++	k_player,
++	k_player_name,
+ 	k_plop,
+ 	k_pluck,
+ 	k_pp,
+@@ -332,6 +356,7 @@ enum {
+ 	k_score_part,
+ 	k_score_partwise,
+ 	k_score_timewise,
++	k_second,
+ 	k_segno,
+ 	k_semi_pitched,
+ 	k_senza_misura,
+@@ -376,14 +401,19 @@ enum {
+ 	k_stick_material,
+ 	k_stick_type,
+ 	k_stopped,
++	k_straight,
+ 	k_stress,
+ 	k_string,
+ 	k_string_mute,
+ 	k_strong_accent,
+ 	k_suffix,
+ 	k_supports,
++	k_swing,
++	k_swing_style,
++	k_swing_type,
+ 	k_syllabic,
+ 	k_symbol,
++	k_sync,
+ 	k_system_distance,
+ 	k_system_dividers,
+ 	k_system_layout,
+@@ -428,6 +458,7 @@ enum {
+ 	k_virtual_name,
+ 	k_voice,
+ 	k_volume,
++	k_wait,
+ 	k_wavy_line,
+ 	k_wedge,
+ 	k_with_bar,
+diff -rupN libmusicxml-3.22.old/src/elements/factory.cpp libmusicxml-3.22/src/elements/factory.cpp
+--- libmusicxml-3.22.old/src/elements/factory.cpp	2022-06-20 08:33:21.000000000 +0200
++++ libmusicxml-3.22/src/elements/factory.cpp	2025-06-02 16:43:49.489447233 +0200
+@@ -97,6 +97,7 @@ factory::factory()
+ 	fMap["arrowhead"] 	= new newElementFunctor<k_arrowhead>;
+ 	fMap["articulations"] 	= new newElementFunctor<k_articulations>;
+ 	fMap["artificial"] 	= new newElementFunctor<k_artificial>;
++	fMap["assess"] 	= new newElementFunctor<k_assess>;
+ 	fMap["attributes"] 	= new newElementFunctor<k_attributes>;
+ 	fMap["backup"] 	= new newElementFunctor<k_backup>;
+ 	fMap["bar-style"] 	= new newElementFunctor<k_bar_style>;
+@@ -105,6 +106,7 @@ factory::factory()
+ 	fMap["base-pitch"] 	= new newElementFunctor<k_base_pitch>;
+ 	fMap["bass"] 	= new newElementFunctor<k_bass>;
+ 	fMap["bass-alter"] 	= new newElementFunctor<k_bass_alter>;
++	fMap["bass-separator"] 	= new newElementFunctor<k_bass_separator>;
+ 	fMap["bass-step"] 	= new newElementFunctor<k_bass_step>;
+ 	fMap["beam"] 	= new newElementFunctor<k_beam>;
+ 	fMap["beat-repeat"] 	= new newElementFunctor<k_beat_repeat>;
+@@ -130,6 +132,7 @@ factory::factory()
+ 	fMap["clef"] 	= new newElementFunctor<k_clef>;
+ 	fMap["clef-octave-change"] 	= new newElementFunctor<k_clef_octave_change>;
+ 	fMap["coda"] 	= new newElementFunctor<k_coda>;
++	fMap["concert-score"] 	= new newElementFunctor<k_concert_score>;
+ 	fMap["creator"] 	= new newElementFunctor<k_creator>;
+ 	fMap["credit"] 	= new newElementFunctor<k_credit>;
+ 	fMap["credit-image"] 	= new newElementFunctor<k_credit_image>;
+@@ -193,9 +196,11 @@ factory::factory()
+ 	fMap["figured-bass"] 	= new newElementFunctor<k_figured_bass>;
+ 	fMap["fingering"] 	= new newElementFunctor<k_fingering>;
+ 	fMap["fingernails"] 	= new newElementFunctor<k_fingernails>;
++	fMap["first"] 	= new newElementFunctor<k_first>;
+ 	fMap["first-fret"] 	= new newElementFunctor<k_first_fret>;
+ 	fMap["flip"] 	= new newElementFunctor<k_flip>;
+ 	fMap["footnote"] 	= new newElementFunctor<k_footnote>;
++	fMap["for-part"] 	= new newElementFunctor<k_for_part>;
+ 	fMap["forward"] 	= new newElementFunctor<k_forward>;
+ 	fMap["fp"] 	= new newElementFunctor<k_fp>;
+ 	fMap["frame"] 	= new newElementFunctor<k_frame>;
+@@ -214,6 +219,7 @@ factory::factory()
+ 	fMap["group-abbreviation"] 	= new newElementFunctor<k_group_abbreviation>;
+ 	fMap["group-abbreviation-display"] 	= new newElementFunctor<k_group_abbreviation_display>;
+ 	fMap["group-barline"] 	= new newElementFunctor<k_group_barline>;
++	fMap["group-link"] 	= new newElementFunctor<k_group_link>;
+ 	fMap["group-name"] 	= new newElementFunctor<k_group_name>;
+ 	fMap["group-name-display"] 	= new newElementFunctor<k_group_name_display>;
+ 	fMap["group-symbol"] 	= new newElementFunctor<k_group_symbol>;
+@@ -238,6 +244,8 @@ factory::factory()
+ 	fMap["image"] 	= new newElementFunctor<k_image>;
+ 	fMap["instrument"] 	= new newElementFunctor<k_instrument>;
+ 	fMap["instrument-abbreviation"] 	= new newElementFunctor<k_instrument_abbreviation>;
++	fMap["instrument-change"] 	= new newElementFunctor<k_instrument_change>;
++	fMap["instrument-link"] 	= new newElementFunctor<k_instrument_link>;
+ 	fMap["instrument-name"] 	= new newElementFunctor<k_instrument_name>;
+ 	fMap["instrument-sound"] 	= new newElementFunctor<k_instrument_sound>;
+ 	fMap["instruments"] 	= new newElementFunctor<k_instruments>;
+@@ -258,8 +266,11 @@ factory::factory()
+ 	fMap["left-margin"] 	= new newElementFunctor<k_left_margin>;
+ 	fMap["level"] 	= new newElementFunctor<k_level>;
+ 	fMap["line"] 	= new newElementFunctor<k_line>;
++	fMap["line-detail"] 	= new newElementFunctor<k_line_detail>;
+ 	fMap["line-width"] 	= new newElementFunctor<k_line_width>;
+ 	fMap["link"] 	= new newElementFunctor<k_link>;
++	fMap["listen"] 	= new newElementFunctor<k_listen>;
++	fMap["listening"] 	= new newElementFunctor<k_listening>;
+ 	fMap["lyric"] 	= new newElementFunctor<k_lyric>;
+ 	fMap["lyric-font"] 	= new newElementFunctor<k_lyric_font>;
+ 	fMap["lyric-language"] 	= new newElementFunctor<k_lyric_language>;
+@@ -310,6 +321,12 @@ factory::factory()
+ 	fMap["note-size"] 	= new newElementFunctor<k_note_size>;
+ 	fMap["notehead"] 	= new newElementFunctor<k_notehead>;
+ 	fMap["notehead-text"] 	= new newElementFunctor<k_notehead_text>;
++	fMap["numeral"] 	= new newElementFunctor<k_numeral>;
++	fMap["numeral-alter"] 	= new newElementFunctor<k_numeral_alter>;
++	fMap["numeral-fifths"] 	= new newElementFunctor<k_numeral_fifths>;
++	fMap["numeral-key"] 	= new newElementFunctor<k_numeral_key>;Add commentMore actions
++	fMap["numeral-mode"] 	= new newElementFunctor<k_numeral_mode>;
++	fMap["numeral-root"] 	= new newElementFunctor<k_numeral_root>;
+ 	fMap["octave"] 	= new newElementFunctor<k_octave>;
+ 	fMap["octave-change"] 	= new newElementFunctor<k_octave_change>;
+ 	fMap["octave-shift"] 	= new newElementFunctor<k_octave_shift>;
+@@ -322,6 +339,8 @@ factory::factory()
+ 	fMap["other-articulation"] 	= new newElementFunctor<k_other_articulation>;
+ 	fMap["other-direction"] 	= new newElementFunctor<k_other_direction>;
+ 	fMap["other-dynamics"] 	= new newElementFunctor<k_other_dynamics>;
++	fMap["other-listen"] 	= new newElementFunctor<k_other_listen>;
++	fMap["other-listening"] 	= new newElementFunctor<k_other_listening>;
+ 	fMap["other-notation"] 	= new newElementFunctor<k_other_notation>;
+ 	fMap["other-ornament"] 	= new newElementFunctor<k_other_ornament>;
+ 	fMap["other-percussion"] 	= new newElementFunctor<k_other_percussion>;
+@@ -336,11 +355,14 @@ factory::factory()
+ 	fMap["part"] 	= new newElementFunctor<k_part>;
+ 	fMap["part-abbreviation"] 	= new newElementFunctor<k_part_abbreviation>;
+ 	fMap["part-abbreviation-display"] 	= new newElementFunctor<k_part_abbreviation_display>;
++	fMap["part-clef"] 	= new newElementFunctor<k_part_clef>;
+ 	fMap["part-group"] 	= new newElementFunctor<k_part_group>;
++	fMap["part-link"] 	= new newElementFunctor<k_part_link>;
+ 	fMap["part-list"] 	= new newElementFunctor<k_part_list>;
+ 	fMap["part-name"] 	= new newElementFunctor<k_part_name>;
+ 	fMap["part-name-display"] 	= new newElementFunctor<k_part_name_display>;
+ 	fMap["part-symbol"] 	= new newElementFunctor<k_part_symbol>;
++	fMap["part-transpose"] 	= new newElementFunctor<k_part_transpose>;
+ 	fMap["pedal"] 	= new newElementFunctor<k_pedal>;
+ 	fMap["pedal-alter"] 	= new newElementFunctor<k_pedal_alter>;
+ 	fMap["pedal-step"] 	= new newElementFunctor<k_pedal_step>;
+@@ -351,6 +373,8 @@ factory::factory()
+ 	fMap["pitch"] 	= new newElementFunctor<k_pitch>;
+ 	fMap["pitched"] 	= new newElementFunctor<k_pitched>;
+ 	fMap["play"] 	= new newElementFunctor<k_play>;
++	fMap["player"] 	= new newElementFunctor<k_player>;
++	fMap["player-name"] 	= new newElementFunctor<k_player_name>;
+ 	fMap["plop"] 	= new newElementFunctor<k_plop>;
+ 	fMap["pluck"] 	= new newElementFunctor<k_pluck>;
+ 	fMap["pp"] 	= new newElementFunctor<k_pp>;
+@@ -384,6 +408,7 @@ factory::factory()
+ 	fMap["score-part"] 	= new newElementFunctor<k_score_part>;
+ 	fMap["score-partwise"] 	= new newElementFunctor<k_score_partwise>;
+ 	fMap["score-timewise"] 	= new newElementFunctor<k_score_timewise>;
++	fMap["second"] 	= new newElementFunctor<k_second>;
+ 	fMap["segno"] 	= new newElementFunctor<k_segno>;
+ 	fMap["semi-pitched"] 	= new newElementFunctor<k_semi_pitched>;
+ 	fMap["senza-misura"] 	= new newElementFunctor<k_senza_misura>;
+@@ -428,14 +453,19 @@ factory::factory()
+ 	fMap["stick-material"] 	= new newElementFunctor<k_stick_material>;
+ 	fMap["stick-type"] 	= new newElementFunctor<k_stick_type>;
+ 	fMap["stopped"] 	= new newElementFunctor<k_stopped>;
++	fMap["straight"] 	= new newElementFunctor<k_straight>;
+ 	fMap["stress"] 	= new newElementFunctor<k_stress>;
+ 	fMap["string"] 	= new newElementFunctor<k_string>;
+ 	fMap["string-mute"] 	= new newElementFunctor<k_string_mute>;
+ 	fMap["strong-accent"] 	= new newElementFunctor<k_strong_accent>;
+ 	fMap["suffix"] 	= new newElementFunctor<k_suffix>;
+ 	fMap["supports"] 	= new newElementFunctor<k_supports>;
++	fMap["swing"] 	= new newElementFunctor<k_swing>;
++	fMap["swing-style"] 	= new newElementFunctor<k_swing_style>;
++	fMap["swing-type"] 	= new newElementFunctor<k_swing_type>;
+ 	fMap["syllabic"] 	= new newElementFunctor<k_syllabic>;
+ 	fMap["symbol"] 	= new newElementFunctor<k_symbol>;
++	fMap["sync"] 	= new newElementFunctor<k_sync>;
+ 	fMap["system-distance"] 	= new newElementFunctor<k_system_distance>;
+ 	fMap["system-dividers"] 	= new newElementFunctor<k_system_dividers>;
+ 	fMap["system-layout"] 	= new newElementFunctor<k_system_layout>;
+@@ -480,6 +510,7 @@ factory::factory()
+ 	fMap["virtual-name"] 	= new newElementFunctor<k_virtual_name>;
+ 	fMap["voice"] 	= new newElementFunctor<k_voice>;
+ 	fMap["volume"] 	= new newElementFunctor<k_volume>;
++	fMap["wait"] 	= new newElementFunctor<k_wait>;
+ 	fMap["wavy-line"] 	= new newElementFunctor<k_wavy_line>;
+ 	fMap["wedge"] 	= new newElementFunctor<k_wedge>;
+ 	fMap["with-bar"] 	= new newElementFunctor<k_with_bar>;
+@@ -509,6 +540,7 @@ factory::factory()
+ 	fType2Name[k_arrowhead] 	= "arrowhead";
+ 	fType2Name[k_articulations] 	= "articulations";
+ 	fType2Name[k_artificial] 	= "artificial";
++	fType2Name[k_assess] 	= "assess";
+ 	fType2Name[k_attributes] 	= "attributes";
+ 	fType2Name[k_backup] 	= "backup";
+ 	fType2Name[k_bar_style] 	= "bar-style";
+@@ -517,6 +549,7 @@ factory::factory()
+ 	fType2Name[k_base_pitch] 	= "base-pitch";
+ 	fType2Name[k_bass] 	= "bass";
+ 	fType2Name[k_bass_alter] 	= "bass-alter";
++	fType2Name[k_bass_separator] 	= "bass-separator";
+ 	fType2Name[k_bass_step] 	= "bass-step";
+ 	fType2Name[k_beam] 	= "beam";
+ 	fType2Name[k_beat_repeat] 	= "beat-repeat";
+@@ -542,6 +575,7 @@ factory::factory()
+ 	fType2Name[k_clef] 	= "clef";
+ 	fType2Name[k_clef_octave_change] 	= "clef-octave-change";
+ 	fType2Name[k_coda] 	= "coda";
++	fType2Name[k_concert_score] 	= "concert-score";
+ 	fType2Name[k_creator] 	= "creator";
+ 	fType2Name[k_credit] 	= "credit";
+ 	fType2Name[k_credit_image] 	= "credit-image";
+@@ -605,9 +639,11 @@ factory::factory()
+ 	fType2Name[k_figured_bass] 	= "figured-bass";
+ 	fType2Name[k_fingering] 	= "fingering";
+ 	fType2Name[k_fingernails] 	= "fingernails";
++	fType2Name[k_first] 	= "first";
+ 	fType2Name[k_first_fret] 	= "first-fret";
+ 	fType2Name[k_flip] 	= "flip";
+ 	fType2Name[k_footnote] 	= "footnote";
++	fType2Name[k_for_part] 	= "for-part";
+ 	fType2Name[k_forward] 	= "forward";
+ 	fType2Name[k_fp] 	= "fp";
+ 	fType2Name[k_frame] 	= "frame";
+@@ -626,6 +662,7 @@ factory::factory()
+ 	fType2Name[k_group_abbreviation] 	= "group-abbreviation";
+ 	fType2Name[k_group_abbreviation_display] 	= "group-abbreviation-display";
+ 	fType2Name[k_group_barline] 	= "group-barline";
++	fType2Name[k_group_link] 	= "group-link";
+ 	fType2Name[k_group_name] 	= "group-name";
+ 	fType2Name[k_group_name_display] 	= "group-name-display";
+ 	fType2Name[k_group_symbol] 	= "group-symbol";
+@@ -650,6 +687,8 @@ factory::factory()
+ 	fType2Name[k_image] 	= "image";
+ 	fType2Name[k_instrument] 	= "instrument";
+ 	fType2Name[k_instrument_abbreviation] 	= "instrument-abbreviation";
++	fType2Name[k_instrument_change] 	= "instrument-change";
++	fType2Name[k_instrument_link] 	= "instrument-link";
+ 	fType2Name[k_instrument_name] 	= "instrument-name";
+ 	fType2Name[k_instrument_sound] 	= "instrument-sound";
+ 	fType2Name[k_instruments] 	= "instruments";
+@@ -670,8 +709,11 @@ factory::factory()
+ 	fType2Name[k_left_margin] 	= "left-margin";
+ 	fType2Name[k_level] 	= "level";
+ 	fType2Name[k_line] 	= "line";
++	fType2Name[k_line_detail] 	= "line-detail";
+ 	fType2Name[k_line_width] 	= "line-width";
+ 	fType2Name[k_link] 	= "link";
++	fType2Name[k_listen] 	= "listen";
++	fType2Name[k_listening] 	= "listening";
+ 	fType2Name[k_lyric] 	= "lyric";
+ 	fType2Name[k_lyric_font] 	= "lyric-font";
+ 	fType2Name[k_lyric_language] 	= "lyric-language";
+@@ -722,6 +764,12 @@ factory::factory()
+ 	fType2Name[k_note_size] 	= "note-size";
+ 	fType2Name[k_notehead] 	= "notehead";
+ 	fType2Name[k_notehead_text] 	= "notehead-text";
++	fType2Name[k_numeral] 	= "numeral";
++	fType2Name[k_numeral_alter] 	= "numeral-alter";
++	fType2Name[k_numeral_fifths] 	= "numeral-fifths";
++	fType2Name[k_numeral_key] 	= "numeral-key";
++	fType2Name[k_numeral_mode] 	= "numeral-mode";
++	fType2Name[k_numeral_root] 	= "numeral-root";
+ 	fType2Name[k_octave] 	= "octave";
+ 	fType2Name[k_octave_change] 	= "octave-change";
+ 	fType2Name[k_octave_shift] 	= "octave-shift";
+@@ -734,6 +782,8 @@ factory::factory()
+ 	fType2Name[k_other_articulation] 	= "other-articulation";
+ 	fType2Name[k_other_direction] 	= "other-direction";
+ 	fType2Name[k_other_dynamics] 	= "other-dynamics";
++	fType2Name[k_other_listen] 	= "other-listen";
++	fType2Name[k_other_listening] 	= "other-listening";
+ 	fType2Name[k_other_notation] 	= "other-notation";
+ 	fType2Name[k_other_ornament] 	= "other-ornament";
+ 	fType2Name[k_other_percussion] 	= "other-percussion";
+@@ -748,11 +798,14 @@ factory::factory()
+ 	fType2Name[k_part] 	= "part";
+ 	fType2Name[k_part_abbreviation] 	= "part-abbreviation";
+ 	fType2Name[k_part_abbreviation_display] 	= "part-abbreviation-display";
++	fType2Name[k_part_clef] 	= "part-clef";
+ 	fType2Name[k_part_group] 	= "part-group";
++	fType2Name[k_part_link] 	= "part-link";
+ 	fType2Name[k_part_list] 	= "part-list";
+ 	fType2Name[k_part_name] 	= "part-name";
+ 	fType2Name[k_part_name_display] 	= "part-name-display";
+ 	fType2Name[k_part_symbol] 	= "part-symbol";
++	fType2Name[k_part_transpose] 	= "part-transpose";
+ 	fType2Name[k_pedal] 	= "pedal";
+ 	fType2Name[k_pedal_alter] 	= "pedal-alter";
+ 	fType2Name[k_pedal_step] 	= "pedal-step";
+@@ -763,6 +816,8 @@ factory::factory()
+ 	fType2Name[k_pitch] 	= "pitch";
+ 	fType2Name[k_pitched] 	= "pitched";
+ 	fType2Name[k_play] 	= "play";
++	fType2Name[k_player] 	= "player";
++	fType2Name[k_player_name] 	= "player-name";
+ 	fType2Name[k_plop] 	= "plop";
+ 	fType2Name[k_pluck] 	= "pluck";
+ 	fType2Name[k_pp] 	= "pp";
+@@ -796,6 +851,7 @@ factory::factory()
+ 	fType2Name[k_score_part] 	= "score-part";
+ 	fType2Name[k_score_partwise] 	= "score-partwise";
+ 	fType2Name[k_score_timewise] 	= "score-timewise";
++	fType2Name[k_second] 	= "second";
+ 	fType2Name[k_segno] 	= "segno";
+ 	fType2Name[k_semi_pitched] 	= "semi-pitched";
+ 	fType2Name[k_senza_misura] 	= "senza-misura";
+@@ -840,14 +896,19 @@ factory::factory()
+ 	fType2Name[k_stick_material] 	= "stick-material";
+ 	fType2Name[k_stick_type] 	= "stick-type";
+ 	fType2Name[k_stopped] 	= "stopped";
++	fType2Name[k_straight] 	= "straight";
+ 	fType2Name[k_stress] 	= "stress";
+ 	fType2Name[k_string] 	= "string";
+ 	fType2Name[k_string_mute] 	= "string-mute";
+ 	fType2Name[k_strong_accent] 	= "strong-accent";
+ 	fType2Name[k_suffix] 	= "suffix";
+ 	fType2Name[k_supports] 	= "supports";
++	fType2Name[k_swing] 	= "swing";
++	fType2Name[k_swing_style] 	= "swing-style";
++	fType2Name[k_swing_type] 	= "swing-type";
+ 	fType2Name[k_syllabic] 	= "syllabic";
+ 	fType2Name[k_symbol] 	= "symbol";
++	fType2Name[k_sync] 	= "sync";
+ 	fType2Name[k_system_distance] 	= "system-distance";
+ 	fType2Name[k_system_dividers] 	= "system-dividers";
+ 	fType2Name[k_system_layout] 	= "system-layout";
+@@ -892,6 +953,7 @@ factory::factory()
+ 	fType2Name[k_virtual_name] 	= "virtual-name";
+ 	fType2Name[k_voice] 	= "voice";
+ 	fType2Name[k_volume] 	= "volume";
++	fType2Name[k_wait] 	= "wait";
+ 	fType2Name[k_wavy_line] 	= "wavy-line";
+ 	fType2Name[k_wedge] 	= "wedge";
+ 	fType2Name[k_with_bar] 	= "with-bar";
+diff -rupN libmusicxml-3.22.old/src/elements/typedefs.h libmusicxml-3.22/src/elements/typedefs.h
+--- libmusicxml-3.22.old/src/elements/typedefs.h	2022-06-20 08:33:21.000000000 +0200
++++ libmusicxml-3.22/src/elements/typedefs.h	2025-06-02 16:53:07.640431296 +0200
+@@ -47,6 +47,7 @@ typedef SMARTP<musicxml<k_arrow_style> >
+ typedef SMARTP<musicxml<k_arrowhead> >		S_arrowhead;
+ typedef SMARTP<musicxml<k_articulations> >		S_articulations;
+ typedef SMARTP<musicxml<k_artificial> >		S_artificial;
++typedef SMARTP<musicxml<k_assess> >		S_assess;
+ typedef SMARTP<musicxml<k_attributes> >		S_attributes;
+ typedef SMARTP<musicxml<k_backup> >		S_backup;
+ typedef SMARTP<musicxml<k_bar_style> >		S_bar_style;
+@@ -55,6 +56,7 @@ typedef SMARTP<musicxml<k_barre> >		S_ba
+ typedef SMARTP<musicxml<k_base_pitch> >		S_base_pitch;
+ typedef SMARTP<musicxml<k_bass> >		S_bass;
+ typedef SMARTP<musicxml<k_bass_alter> >		S_bass_alter;
++typedef SMARTP<musicxml<k_bass_separator> >		S_bass_separator;
+ typedef SMARTP<musicxml<k_bass_step> >		S_bass_step;
+ typedef SMARTP<musicxml<k_beam> >		S_beam;
+ typedef SMARTP<musicxml<k_beat_repeat> >		S_beat_repeat;
+@@ -80,6 +82,7 @@ typedef SMARTP<musicxml<k_circular_arrow
+ typedef SMARTP<musicxml<k_clef> >		S_clef;
+ typedef SMARTP<musicxml<k_clef_octave_change> >		S_clef_octave_change;
+ typedef SMARTP<musicxml<k_coda> >		S_coda;
++typedef SMARTP<musicxml<k_concert_score> >		S_concert_score;
+ typedef SMARTP<musicxml<k_creator> >		S_creator;
+ typedef SMARTP<musicxml<k_credit> >		S_credit;
+ typedef SMARTP<musicxml<k_credit_image> >		S_credit_image;
+@@ -143,9 +146,11 @@ typedef SMARTP<musicxml<k_figure_number>
+ typedef SMARTP<musicxml<k_figured_bass> >		S_figured_bass;
+ typedef SMARTP<musicxml<k_fingering> >		S_fingering;
+ typedef SMARTP<musicxml<k_fingernails> >		S_fingernails;
++typedef SMARTP<musicxml<k_first> >		S_first;
+ typedef SMARTP<musicxml<k_first_fret> >		S_first_fret;
+ typedef SMARTP<musicxml<k_flip> >		S_flip;
+ typedef SMARTP<musicxml<k_footnote> >		S_footnote;
++typedef SMARTP<musicxml<k_for_part> >		S_for_part;
+ typedef SMARTP<musicxml<k_forward> >		S_forward;
+ typedef SMARTP<musicxml<k_fp> >		S_fp;
+ typedef SMARTP<musicxml<k_frame> >		S_frame;
+@@ -164,6 +169,7 @@ typedef SMARTP<musicxml<k_group> >		S_gr
+ typedef SMARTP<musicxml<k_group_abbreviation> >		S_group_abbreviation;
+ typedef SMARTP<musicxml<k_group_abbreviation_display> >		S_group_abbreviation_display;
+ typedef SMARTP<musicxml<k_group_barline> >		S_group_barline;
++typedef SMARTP<musicxml<k_group_link> >		S_group_link;
+ typedef SMARTP<musicxml<k_group_name> >		S_group_name;
+ typedef SMARTP<musicxml<k_group_name_display> >		S_group_name_display;
+ typedef SMARTP<musicxml<k_group_symbol> >		S_group_symbol;
+@@ -188,6 +194,8 @@ typedef SMARTP<musicxml<k_identification
+ typedef SMARTP<musicxml<k_image> >		S_image;
+ typedef SMARTP<musicxml<k_instrument> >		S_instrument;
+ typedef SMARTP<musicxml<k_instrument_abbreviation> >		S_instrument_abbreviation;
++typedef SMARTP<musicxml<k_instrument_change> >		S_instrument_change;
++typedef SMARTP<musicxml<k_instrument_link> >		S_instrument_link;
+ typedef SMARTP<musicxml<k_instrument_name> >		S_instrument_name;
+ typedef SMARTP<musicxml<k_instrument_sound> >		S_instrument_sound;
+ typedef SMARTP<musicxml<k_instruments> >		S_instruments;
+@@ -208,8 +216,11 @@ typedef SMARTP<musicxml<k_left_divider>
+ typedef SMARTP<musicxml<k_left_margin> >		S_left_margin;
+ typedef SMARTP<musicxml<k_level> >		S_level;
+ typedef SMARTP<musicxml<k_line> >		S_line;
++typedef SMARTP<musicxml<k_line_detail> >		S_line_detail;
+ typedef SMARTP<musicxml<k_line_width> >		S_line_width;
+ typedef SMARTP<musicxml<k_link> >		S_link;
++typedef SMARTP<musicxml<k_listen> >		S_listen;
++typedef SMARTP<musicxml<k_listening> >		S_listening;
+ typedef SMARTP<musicxml<k_lyric> >		S_lyric;
+ typedef SMARTP<musicxml<k_lyric_font> >		S_lyric_font;
+ typedef SMARTP<musicxml<k_lyric_language> >		S_lyric_language;
+@@ -260,6 +271,12 @@ typedef SMARTP<musicxml<k_note> >		S_not
+ typedef SMARTP<musicxml<k_note_size> >		S_note_size;
+ typedef SMARTP<musicxml<k_notehead> >		S_notehead;
+ typedef SMARTP<musicxml<k_notehead_text> >		S_notehead_text;
++typedef SMARTP<musicxml<k_numeral> >		S_numeral;
++typedef SMARTP<musicxml<k_numeral_alter> >		S_numeral_alter;
++typedef SMARTP<musicxml<k_numeral_fifths> >		S_numeral_fifths;
++typedef SMARTP<musicxml<k_numeral_key> >		S_numeral_key;
++typedef SMARTP<musicxml<k_numeral_mode> >		S_numeral_mode;
++typedef SMARTP<musicxml<k_numeral_root> >		S_numeral_root;
+ typedef SMARTP<musicxml<k_octave> >		S_octave;
+ typedef SMARTP<musicxml<k_octave_change> >		S_octave_change;
+ typedef SMARTP<musicxml<k_octave_shift> >		S_octave_shift;
+@@ -272,6 +289,8 @@ typedef SMARTP<musicxml<k_other_appearan
+ typedef SMARTP<musicxml<k_other_articulation> >		S_other_articulation;
+ typedef SMARTP<musicxml<k_other_direction> >		S_other_direction;
+ typedef SMARTP<musicxml<k_other_dynamics> >		S_other_dynamics;
++typedef SMARTP<musicxml<k_other_listen> >		S_other_listen;
++typedef SMARTP<musicxml<k_other_listening> >		S_other_listening;
+ typedef SMARTP<musicxml<k_other_notation> >		S_other_notation;
+ typedef SMARTP<musicxml<k_other_ornament> >		S_other_ornament;
+ typedef SMARTP<musicxml<k_other_percussion> >		S_other_percussion;
+@@ -286,11 +305,14 @@ typedef SMARTP<musicxml<k_pan> >		S_pan;
+ typedef SMARTP<musicxml<k_part> >		S_part;
+ typedef SMARTP<musicxml<k_part_abbreviation> >		S_part_abbreviation;
+ typedef SMARTP<musicxml<k_part_abbreviation_display> >		S_part_abbreviation_display;
++typedef SMARTP<musicxml<k_part_clef> >		S_part_clef;
+ typedef SMARTP<musicxml<k_part_group> >		S_part_group;
++typedef SMARTP<musicxml<k_part_link> >		S_part_link;
+ typedef SMARTP<musicxml<k_part_list> >		S_part_list;
+ typedef SMARTP<musicxml<k_part_name> >		S_part_name;
+ typedef SMARTP<musicxml<k_part_name_display> >		S_part_name_display;
+ typedef SMARTP<musicxml<k_part_symbol> >		S_part_symbol;
++typedef SMARTP<musicxml<k_part_transpose> >		S_part_transpose;
+ typedef SMARTP<musicxml<k_pedal> >		S_pedal;
+ typedef SMARTP<musicxml<k_pedal_alter> >		S_pedal_alter;
+ typedef SMARTP<musicxml<k_pedal_step> >		S_pedal_step;
+@@ -301,6 +323,8 @@ typedef SMARTP<musicxml<k_pf> >		S_pf;
+ typedef SMARTP<musicxml<k_pitch> >		S_pitch;
+ typedef SMARTP<musicxml<k_pitched> >		S_pitched;
+ typedef SMARTP<musicxml<k_play> >		S_play;
++typedef SMARTP<musicxml<k_player> >		S_player;
++typedef SMARTP<musicxml<k_player_name> >		S_player_name;
+ typedef SMARTP<musicxml<k_plop> >		S_plop;
+ typedef SMARTP<musicxml<k_pluck> >		S_pluck;
+ typedef SMARTP<musicxml<k_pp> >		S_pp;
+@@ -334,6 +358,7 @@ typedef SMARTP<musicxml<k_score_instrume
+ typedef SMARTP<musicxml<k_score_part> >		S_score_part;
+ typedef SMARTP<musicxml<k_score_partwise> >		S_score_partwise;
+ typedef SMARTP<musicxml<k_score_timewise> >		S_score_timewise;
++typedef SMARTP<musicxml<k_second> >		S_second;
+ typedef SMARTP<musicxml<k_segno> >		S_segno;
+ typedef SMARTP<musicxml<k_semi_pitched> >		S_semi_pitched;
+ typedef SMARTP<musicxml<k_senza_misura> >		S_senza_misura;
+@@ -378,14 +403,19 @@ typedef SMARTP<musicxml<k_stick_location
+ typedef SMARTP<musicxml<k_stick_material> >		S_stick_material;
+ typedef SMARTP<musicxml<k_stick_type> >		S_stick_type;
+ typedef SMARTP<musicxml<k_stopped> >		S_stopped;
++typedef SMARTP<musicxml<k_straight> >		S_straight;
+ typedef SMARTP<musicxml<k_stress> >		S_stress;
+ typedef SMARTP<musicxml<k_string> >		S_string;
+ typedef SMARTP<musicxml<k_string_mute> >		S_string_mute;
+ typedef SMARTP<musicxml<k_strong_accent> >		S_strong_accent;
+ typedef SMARTP<musicxml<k_suffix> >		S_suffix;
+ typedef SMARTP<musicxml<k_supports> >		S_supports;
++typedef SMARTP<musicxml<k_swing> >		S_swing;
++typedef SMARTP<musicxml<k_swing_style> >		S_swing_style;
++typedef SMARTP<musicxml<k_swing_type> >		S_swing_type;
+ typedef SMARTP<musicxml<k_syllabic> >		S_syllabic;
+ typedef SMARTP<musicxml<k_symbol> >		S_symbol;
++typedef SMARTP<musicxml<k_sync> >		S_sync;
+ typedef SMARTP<musicxml<k_system_distance> >		S_system_distance;
+ typedef SMARTP<musicxml<k_system_dividers> >		S_system_dividers;
+ typedef SMARTP<musicxml<k_system_layout> >		S_system_layout;
+@@ -430,6 +460,7 @@ typedef SMARTP<musicxml<k_virtual_librar
+ typedef SMARTP<musicxml<k_virtual_name> >		S_virtual_name;
+ typedef SMARTP<musicxml<k_voice> >		S_voice;
+ typedef SMARTP<musicxml<k_volume> >		S_volume;
++typedef SMARTP<musicxml<k_wait> >		S_wait;
+ typedef SMARTP<musicxml<k_wavy_line> >		S_wavy_line;
+ typedef SMARTP<musicxml<k_wedge> >		S_wedge;
+ typedef SMARTP<musicxml<k_with_bar> >		S_with_bar;

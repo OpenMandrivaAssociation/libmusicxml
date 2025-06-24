@@ -1,0 +1,12 @@
+diff -rupN libmusicxml-3.22.old/build/CMakeLists.txt libmusicxml-3.22/build/CMakeLists.txt
+--- libmusicxml-3.22.old/build/CMakeLists.txt	2022-06-20 08:33:21.000000000 +0200
++++ libmusicxml-3.22/build/CMakeLists.txt	2023-08-11 14:43:59.538667269 +0200
+@@ -131,7 +131,7 @@ if(WIN32 OR MSYS)
+   endif()
+ else()
+   set(LIBCONTENT ${CORESRC} ${COREH})
+-  set(target libmusicxml)
++  set(target musicxml)
+ endif()
+ 
+ set(staticlib musicxml2static)

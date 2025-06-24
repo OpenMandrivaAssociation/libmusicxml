@@ -1,0 +1,10 @@
+# The library is version 3.00 but it still has the "libmusicxml2" name
+# for compatibility reasons  and because there is no change from the
+# architecture viewpoint. See the README.txt file in the source tarball.
+addFilter("E: incoherent-version-in-name")
+
+# Sorry: MusicXML Public License 3.0 is the license chosen by dtd autors
+addFilter("W: invalid-license") 
+
+# We cannot do a thing about this...
+addFilter("W: no-manual-page-for-binary")
