@@ -62,7 +62,7 @@ diff -rupN libmusicxml-3.22.old/src/elements/elements.h libmusicxml-3.22/src/ele
  	k_line_width,
  	k_link,
 +	k_listen,
-+	k_listening
++	k_listening,
  	k_lyric,
  	k_lyric_font,
  	k_lyric_language,
