@@ -1,0 +1,39 @@
+diff -rupN libmusicxml-3.22.old/build/Makefile libmusicxml-3.22/build/Makefile
+--- libmusicxml-3.22.old/build/Makefile	2022-06-20 08:33:21.000000000 +0200
++++ libmusicxml-3.22/build/Makefile	2025-06-02 16:13:29.907177926 +0200
+@@ -12,7 +12,7 @@ MAKEFILE ?= Makefile
+ 
+ VERSION = 3.22
+ 
+-CMAKEOPT ?= 
++CMAKEOPTS ?= 
+ TOOLS := xml2midi xmlread xml2guido xmlversion
+ 
+ all :
+@@ -35,7 +35,7 @@ help :
+ 	@echo "   package   create the libmusicxml-$(VERSION) package"
+ 	@echo 	
+ 	@echo "Options:"
+-	@echo "   CMAKEOPT  cmake options passed to cmake by the 'cmake' target"
++	@echo "   CMAKEOPTS  cmake options passed to cmake by the 'cmake' target"
+ 	@echo "   GENERATOR the cmake generator. Currently '$(GENERATOR)'"
+ 	@echo "   LIBDIR      the generation folder. Currently '$(LIBDIR)'"
+ 	@echo "   MSVC      [Windows only] the windows generator. Currently '$(MSVC)'"
+@@ -65,7 +65,7 @@ wasm:
+ 
+ #===============================================================
+ minimal:
+-	$(MAKE) cmake CMAKEOPT="-DGENTOOLS=off -DGENSTATIC=off"
++	$(MAKE) cmake CMAKEOPST="-DGENTOOLS=off -DGENSTATIC=off"
+ 	$(CMAKE) --build $(LIBDIR) --config Release
+ 
+ #===============================================================
+@@ -76,7 +76,7 @@ ios :
+ 
+ #===============================================================
+ cmake : $(LIBDIR)
+-	cd $(LIBDIR) && $(CMAKE) .. $(CMAKEOPT)
++	cd $(LIBDIR) && $(CMAKE) .. $(CMAKEOPTS)
+ 
+ #===============================================================
+ # building the library for Android
